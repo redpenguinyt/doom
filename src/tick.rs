@@ -27,8 +27,9 @@ impl GameTick {
     }
 
     pub fn sleep_frame(&mut self) {
-        if self.frame_started.elapsed() < Duration::from_secs(1) {
-            thread::sleep(Duration::from_secs(1) / FPS - self.frame_started.elapsed());
+        let elapsed = self.frame_started.elapsed();
+        if elapsed < Duration::from_secs(1) / FPS {
+            thread::sleep(Duration::from_secs(1) / FPS - elapsed);
         }
         self.frame_started = Instant::now()
     }
