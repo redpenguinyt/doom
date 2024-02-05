@@ -61,4 +61,22 @@ impl Sector {
             colour_from_id(bottom_colour_id),
         )
     }
+
+	pub fn many_from_raw(nums: Vec<i32>) -> Vec<Self> {
+        let mut walls = vec![];
+
+        for i in 0..nums.len() / 6 {
+			let i = i * 6;
+            walls.push(Sector::from_raw(
+                nums[i] as usize,
+                nums[i + 1] as usize,
+                nums[i + 2],
+                nums[i + 3],
+                nums[i + 4],
+                nums[i + 5],
+            ))
+        }
+
+		walls
+    }
 }
