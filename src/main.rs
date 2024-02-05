@@ -1,12 +1,12 @@
 use sdl2::event::Event;
-use sdl2::keyboard::{Keycode, Scancode};
+use sdl2::keyboard::Keycode;
 
 mod context;
 mod renderer;
 mod tick;
 mod types;
 
-use context::{GameContext, Rotation};
+use context::GameContext;
 use renderer::*;
 use tick::GameTick;
 
@@ -16,7 +16,7 @@ pub fn main() -> Result<(), String> {
 
     let window = video_subsystem
         .window(
-            "Snake",
+            "Doom but good",
             VSCREEN_WIDTH * PIXEL_SCALE,
             VSCREEN_HEIGHT * PIXEL_SCALE,
         )
@@ -32,88 +32,23 @@ pub fn main() -> Result<(), String> {
     let mut game_tick = GameTick::new();
 
     'running: loop {
-        let m_pressed = event_pump.keyboard_state().is_scancode_pressed(Scancode::M);
-        for (scancode, pressed) in event_pump.keyboard_state().scancodes() {
-            if pressed {
-                let player_rotation = Rotation::from_degrees(context.player.turn);
-                let dx = (player_rotation.sin * 10.0) as i32;
-                let dy = (player_rotation.cos * 10.0) as i32;
-
-                match (m_pressed, scancode) {
-                    // Without M
-                    (false, Scancode::W) => {
-                        // Move forward
-                        context.player.pos.x += dx;
-                        context.player.pos.y += dy;
-                    }
-                    (false, Scancode::S) => {
-                        // Move backwards
-                        context.player.pos.x -= dx;
-                        context.player.pos.y -= dy;
-                    }
-                    // Look left
-                    (false, Scancode::A) => context.player.turn -= 4,
-                    // Look right
-                    (false, Scancode::D) => context.player.turn += 4,
-
-                    // With M
-                    (true, Scancode::W) => {
-                        // Move up
-                        context.player.pos.z -= 4;
-                    }
-                    (true, Scancode::S) => {
-                        // Move down
-                        context.player.pos.z += 4;
-                    }
-                    (true, Scancode::A) => {
-                        // Look up
-                        context.player.look -= 1;
-                    }
-                    (true, Scancode::D) => {
-                        // Look down
-                        context.player.look += 1;
-                    }
-
-                    (_, Scancode::Period) => {
-                        // Strafe left
-                        context.player.pos.x += dy;
-                        context.player.pos.y -= dx;
-                    }
-                    (_, Scancode::Comma) => {
-                        // Strafe right
-                        context.player.pos.x -= dy;
-                        context.player.pos.y += dx;
-                    }
-
-                    (_, _) => (),
-                }
-            }
-        }
-
         for event in event_pump.poll_iter() {
-            #[allow(clippy::single_match)]
             match event {
-                Event::Quit { .. } => break 'running,
-
-                Event::KeyDown {
-                    keycode: Some(keycode),
+                Event::Quit { .. }
+                | Event::KeyDown {
+                    keycode: Some(Keycode::Escape),
                     ..
-                } => match keycode {
-                    Keycode::Escape => break 'running,
-                    Keycode::Y => {
-                        println!("yoohoo!")
-                    }
-
-                    _ => (),
-                },
+                } => break 'running,
 
                 _ => (),
             }
         }
 
+        context.move_player(event_pump.keyboard_state());
+
         game_tick.next_frame();
         if game_tick.tick == 0 {
-            context.tick();
+            // context.tick();
         };
 
         renderer.draw(&mut context)?;

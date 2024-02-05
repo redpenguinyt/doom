@@ -5,6 +5,7 @@ mod wall;
 
 use player::Player;
 pub use rotation::Rotation;
+use sdl2::keyboard::{KeyboardState, Scancode};
 pub use sector::Sector;
 pub use wall::Wall;
 
@@ -89,5 +90,63 @@ impl GameContext {
         }
     }
 
-    pub fn tick(&mut self) {}
+    pub fn move_player(&mut self, keyboard_state: KeyboardState) {
+        let m_pressed = keyboard_state.is_scancode_pressed(Scancode::M);
+        for (scancode, pressed) in keyboard_state.scancodes() {
+            if pressed {
+                let player_rotation = Rotation::from_degrees(self.player.turn);
+                let dx = (player_rotation.sin * 10.0) as i32;
+                let dy = (player_rotation.cos * 10.0) as i32;
+
+                match (m_pressed, scancode) {
+                    // Without M
+                    (false, Scancode::W) => {
+                        // Move forward
+                        self.player.pos.x += dx;
+                        self.player.pos.y += dy;
+                    }
+                    (false, Scancode::S) => {
+                        // Move backwards
+                        self.player.pos.x -= dx;
+                        self.player.pos.y -= dy;
+                    }
+                    // Look left
+                    (false, Scancode::A) => self.player.turn -= 4,
+                    // Look right
+                    (false, Scancode::D) => self.player.turn += 4,
+
+                    // With M
+                    (true, Scancode::W) => {
+                        // Move up
+                        self.player.pos.z -= 4;
+                    }
+                    (true, Scancode::S) => {
+                        // Move down
+                        self.player.pos.z += 4;
+                    }
+                    (true, Scancode::A) => {
+                        // Look up
+                        self.player.look -= 1;
+                    }
+                    (true, Scancode::D) => {
+                        // Look down
+                        self.player.look += 1;
+                    }
+
+                    (_, Scancode::Period) => {
+                        // Strafe left
+                        self.player.pos.x += dy;
+                        self.player.pos.y -= dx;
+                    }
+                    (_, Scancode::Comma) => {
+                        // Strafe right
+                        self.player.pos.x -= dy;
+                        self.player.pos.y += dx;
+                    }
+
+                    (_, _) => (),
+                }
+            }
+        }
+    }
 }
