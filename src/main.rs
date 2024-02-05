@@ -2,7 +2,7 @@ use sdl2::event::Event;
 use sdl2::keyboard::{Keycode, Scancode};
 
 mod context;
-use context::GameContext;
+use context::{GameContext, Rotation};
 mod renderer;
 use renderer::*;
 mod tick;
@@ -15,8 +15,8 @@ pub fn main() -> Result<(), String> {
     let window = video_subsystem
         .window(
             "Snake",
-            GRID_X_SIZE * DOT_SIZE_IN_PXS,
-            GRID_Y_SIZE * DOT_SIZE_IN_PXS,
+            VSCREEN_WIDTH * PIXEL_SCALE,
+            VSCREEN_HEIGHT * PIXEL_SCALE,
         )
         .opengl()
         .build()
@@ -33,38 +33,54 @@ pub fn main() -> Result<(), String> {
         let m_pressed = event_pump.keyboard_state().is_scancode_pressed(Scancode::M);
         for (scancode, pressed) in event_pump.keyboard_state().scancodes() {
             if pressed {
+                let player_rotation = Rotation::from_degrees(context.player.turn);
+                let dx = (player_rotation.sin * 10.0) as i32;
+                let dy = (player_rotation.cos * 10.0) as i32;
+
                 match (m_pressed, scancode) {
+                    // Without M
                     (false, Scancode::W) => {
-                        println!("up")
-                    }
-                    (true, Scancode::W) => {
-                        println!("move up")
-                    }
-                    (false, Scancode::A) => {
-                        println!("left")
-                    }
-                    (true, Scancode::A) => {
-                        println!("look up")
+                        // Move forward
+                        context.player.pos.x += dx;
+                        context.player.pos.y += dy;
                     }
                     (false, Scancode::S) => {
-                        println!("down")
+                        // Move backwards
+                        context.player.pos.x -= dx;
+                        context.player.pos.y -= dy;
+                    }
+                    // Look left
+                    (false, Scancode::A) => context.player.turn -= 4,
+                    // Look right
+                    (false, Scancode::D) => context.player.turn += 4,
+
+                    // With M
+                    (true, Scancode::W) => {
+                        // Move up
+                        context.player.pos.z -= 4;
                     }
                     (true, Scancode::S) => {
-                        println!("move down")
+                        // Move down
+                        context.player.pos.z += 4;
                     }
-                    (false, Scancode::D) => {
-                        println!("right")
+                    (true, Scancode::A) => {
+                        // Look up
+                        context.player.look -= 1;
                     }
                     (true, Scancode::D) => {
-                        println!("look down")
+                        // Look down
+                        context.player.look += 1;
                     }
+
                     (_, Scancode::Period) => {
-                        // < key
-                        println!("strafe right")
+                        // Strafe left
+                        context.player.pos.x += dy;
+                        context.player.pos.y -= dx;
                     }
                     (_, Scancode::Comma) => {
-                        // > key
-                        println!("strafe left")
+                        // Strafe right
+                        context.player.pos.x -= dy;
+                        context.player.pos.y += dx;
                     }
 
                     (_, _) => (),
@@ -98,7 +114,7 @@ pub fn main() -> Result<(), String> {
             context.tick();
         };
 
-        renderer.draw(&context)?;
+        renderer.draw(&mut context)?;
 
         game_tick.sleep_frame();
     }
