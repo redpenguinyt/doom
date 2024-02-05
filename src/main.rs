@@ -2,10 +2,12 @@ use sdl2::event::Event;
 use sdl2::keyboard::{Keycode, Scancode};
 
 mod context;
-use context::{GameContext, Rotation};
 mod renderer;
-use renderer::*;
 mod tick;
+mod types;
+
+use context::{GameContext, Rotation};
+use renderer::*;
 use tick::GameTick;
 
 pub fn main() -> Result<(), String> {

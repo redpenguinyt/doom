@@ -1,22 +1,17 @@
-use sdl2::{
-    pixels::Color,
-    rect::{Point, Rect},
-    render::WindowCanvas,
-    video::Window,
+use sdl2::{pixels::Color, rect::Rect, render::WindowCanvas, video::Window};
+
+use crate::{
+    context::{GameContext, Rotation, Sector},
+    types::{Pos2D, Pos3D},
 };
 
-use crate::context::{GameContext, Pos3D, Rotation, Sector};
-
-mod clipping;
 mod colour;
-mod dist;
 
-use clipping::clip_behind_player;
 pub use colour::colour_from_id;
 
-pub const VSCREEN_WIDTH: u32 = 160;
-pub const VSCREEN_HEIGHT: u32 = 120;
-pub const PIXEL_SCALE: u32 = 8;
+pub const VSCREEN_WIDTH: u32 = 160 * 8;
+pub const VSCREEN_HEIGHT: u32 = 120 * 8;
+pub const PIXEL_SCALE: u32 = 1;
 
 pub struct Renderer {
     canvas: WindowCanvas,
@@ -29,9 +24,8 @@ impl Renderer {
         Ok(Renderer { canvas })
     }
 
-    fn plot<P: Into<Point>>(&mut self, point: P) -> Result<(), String> {
-        let point = point.into();
-        let flipped_point = Point::new(point.x, VSCREEN_HEIGHT as i32 - 1 - point.y); // Make (0,0) the bottom left corner instead of top left
+    fn plot(&mut self, point: Pos2D) -> Result<(), String> {
+        let flipped_point = Pos2D::new(point.x, VSCREEN_HEIGHT as i32 - 1 - point.y); // Make (0,0) the bottom left corner instead of top left
         self.canvas.fill_rect(Rect::new(
             flipped_point.x * PIXEL_SCALE as i32,
             flipped_point.y * PIXEL_SCALE as i32,
@@ -42,7 +36,7 @@ impl Renderer {
         Ok(())
     }
 
-    fn plot_pixel(&mut self, point: Point, color: Color) -> Result<(), String> {
+    fn plot_pixel(&mut self, point: Pos2D, color: Color) -> Result<(), String> {
         if Rect::new(0, 0, VSCREEN_WIDTH, VSCREEN_HEIGHT).contains_point(point) {
             self.canvas.set_draw_color(color);
             self.plot(point)?;
@@ -77,15 +71,16 @@ impl Renderer {
         context.sectors.sort_unstable_by_key(|s| -s.distance);
 
         for sector in &mut context.sectors {
-            sector.distance = 0; // sector.d = 0;
+            sector.distance = 0;
 
-            sector.surface = if player.pos.z < sector.z0 {
+            let mut surface = if player.pos.z < sector.z0 {
                 1
             } else if player.pos.z > sector.z1 {
                 2
             } else {
                 0
             };
+            let mut surf = [0; VSCREEN_WIDTH as usize];
 
             for l in 0..=1 {
                 for wall in &context.walls[sector.wall_index_start..sector.wall_index_end] {
@@ -114,10 +109,8 @@ impl Renderer {
                     w[3].y = w[1].y;
 
                     // Store this wall's distance
-                    sector.distance += dist::distance(
-                        Point::new(0, 0),
-                        Point::new((w[0].x + w[1].x) / 2, (w[0].y + w[1].y) / 2),
-                    );
+                    sector.distance +=
+                        Pos2D::new((w[0].x + w[1].x) / 2, (w[0].y + w[1].y) / 2).magnitude() as i32;
 
                     // World Z height
                     w[0].z =
@@ -133,13 +126,13 @@ impl Renderer {
                     }
                     // Clip beginning of wall
                     if w[0].y < 1 {
-                        w[0] = clip_behind_player(w[0], w[1]);
-                        w[2] = clip_behind_player(w[2], w[3]);
+                        w[0] = w[0].clip_behind_player(w[1]);
+                        w[2] = w[2].clip_behind_player(w[3]);
                     }
                     // Clip end of wall
                     if w[1].y < 1 {
-                        w[1] = clip_behind_player(w[1], w[0]);
-                        w[3] = clip_behind_player(w[3], w[2]);
+                        w[1] = w[1].clip_behind_player(w[0]);
+                        w[3] = w[3].clip_behind_player(w[2]);
                     }
 
                     // Convert positions to screen (200 is the FOV)
@@ -157,13 +150,15 @@ impl Renderer {
                         w[3].y,
                         wall.colour,
                         sector,
+                        surface,
+                        &mut surf,
                     )?;
                 }
 
                 // Average out distance of walls to get the distance of the sector from the player
-                sector.distance /= sector.wall_index_end as i32 - sector.wall_index_start as i32;
+                sector.distance /= (sector.wall_index_end - sector.wall_index_start) as i32;
                 // Flip to negative to draw top/bottom surface
-                sector.surface *= -1;
+                surface *= -1;
             }
         }
 
@@ -180,7 +175,9 @@ impl Renderer {
         t0: i32,
         t1: i32,
         color: Color,
-        sector: &mut Sector,
+        sector: &Sector,
+        surface: i32,
+        surf: &mut [i32; VSCREEN_WIDTH as usize],
     ) -> Result<(), String> {
         let dyb = (b1 - b0) as f64;
         let dyt = (t1 - t0) as f64;
@@ -202,24 +199,24 @@ impl Renderer {
             let y1 = y1.clamp(0, VSCREEN_HEIGHT as i32);
 
             // Top and bottom
-            match sector.surface {
+            match surface {
                 1 => {
-                    sector.surf[x as usize] = y0;
+                    surf[x as usize] = y0;
                     continue;
                 }
                 2 => {
-                    sector.surf[x as usize] = y1;
+                    surf[x as usize] = y1;
                     continue;
                 }
 
                 -1 => {
-                    for y in sector.surf[x as usize]..y0 {
-                        self.plot_pixel(Point::new(x, y), sector.bottom_colour)?;
+                    for y in surf[x as usize]..y0 {
+                        self.plot_pixel(Pos2D::new(x, y), sector.bottom_colour)?;
                     }
                 }
                 -2 => {
-                    for y in y1..sector.surf[x as usize] {
-                        self.plot_pixel(Point::new(x, y), sector.top_colour)?;
+                    for y in y1..surf[x as usize] {
+                        self.plot_pixel(Pos2D::new(x, y), sector.top_colour)?;
                     }
                 }
 
@@ -227,7 +224,7 @@ impl Renderer {
             }
 
             for y in y0..y1 {
-                self.plot_pixel(Point::new(x, y), color)?;
+                self.plot_pixel(Pos2D::new(x, y), color)?;
             }
         }
 

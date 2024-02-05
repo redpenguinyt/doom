@@ -1,6 +1,6 @@
-use sdl2::{pixels::Color, rect::Point};
+use sdl2::pixels::Color;
 
-use crate::{colour_from_id, VSCREEN_WIDTH};
+use crate::{colour_from_id, types::Pos2D, VSCREEN_WIDTH};
 
 pub struct Sector {
     pub wall_index_start: usize,
@@ -10,7 +10,7 @@ pub struct Sector {
     /// Wall top height (relative to bottom)
     pub z1: i32,
     /// Centre position for sector
-    pub pos: Point,
+    pub pos: Pos2D,
     /// add y distances to sort drawing order
     pub distance: i32,
 
@@ -35,7 +35,7 @@ impl Sector {
             wall_index_end,
             z0,
             z1,
-            pos: Point::new(0, 0),
+            pos: Pos2D::new(0, 0),
             distance: 0,
             top_colour,
             bottom_colour,

@@ -1,14 +1,14 @@
 mod player;
-mod pos3d;
 mod rotation;
 mod wall;
 mod sector;
 
 use player::Player;
-pub use pos3d::Pos3D;
 pub use rotation::Rotation;
 pub use wall::Wall;
 pub use sector::Sector;
+
+use crate::types::Pos3D;
 
 pub struct GameContext {
     pub player: Player,
