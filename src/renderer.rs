@@ -59,6 +59,10 @@ impl Renderer {
 
     pub fn draw(&mut self, context: &mut GameContext) -> Result<(), String> {
         // TODO: avoid mutating context
+        self.canvas
+            .window_mut()
+            .set_size(VSCREEN_WIDTH * PIXEL_SCALE, VSCREEN_HEIGHT * PIXEL_SCALE)
+            .map_err(|e| e.to_string())?;
         self.draw_background()?;
 
         self.draw_3d(context)?;
