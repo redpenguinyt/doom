@@ -7,18 +7,18 @@ pub struct Sector {
     pub wall_index_end: usize,
     /// Wall bottom height
     pub z0: i32,
-    /// Wall top height
+    /// Wall top height (relative to bottom)
     pub z1: i32,
     /// Centre position for sector
     pub pos: Point,
     /// add y distances to sort drawing order
     pub distance: i32,
 
-	pub top_colour: Color,
+    pub top_colour: Color,
     pub bottom_colour: Color,
 
-	pub surf: [i32; VSCREEN_WIDTH as usize],
-	pub surface: i32
+    pub surf: [i32; VSCREEN_WIDTH as usize],
+    pub surface: i32,
 }
 
 impl Sector {
@@ -39,8 +39,8 @@ impl Sector {
             distance: 0,
             top_colour,
             bottom_colour,
-			surf: [0; VSCREEN_WIDTH as usize],
-			surface: 0
+            surf: [0; VSCREEN_WIDTH as usize],
+            surface: 0,
         }
     }
 
@@ -62,11 +62,11 @@ impl Sector {
         )
     }
 
-	pub fn many_from_raw(nums: Vec<i32>) -> Vec<Self> {
+    pub fn many_from_raw(nums: Vec<i32>) -> Vec<Self> {
         let mut walls = vec![];
 
         for i in 0..nums.len() / 6 {
-			let i = i * 6;
+            let i = i * 6;
             walls.push(Sector::from_raw(
                 nums[i] as usize,
                 nums[i + 1] as usize,
@@ -77,6 +77,6 @@ impl Sector {
             ))
         }
 
-		walls
+        walls
     }
 }

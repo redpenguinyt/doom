@@ -25,7 +25,7 @@ impl Wall {
         let mut walls = vec![];
 
         for i in 0..nums.len() / 5 {
-			let i = i * 5;
+            let i = i * 5;
             walls.push(Wall::from_raw(
                 nums[i],
                 nums[i + 1],
@@ -35,6 +35,6 @@ impl Wall {
             ))
         }
 
-		walls
+        walls
     }
 }
