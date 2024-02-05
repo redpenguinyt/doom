@@ -1,6 +1,6 @@
 use sdl2::pixels::Color;
 
-use crate::{colour_from_id, types::Pos2D, VSCREEN_WIDTH};
+use crate::{colour_from_id, types::Pos2D};
 
 pub struct Sector {
     pub wall_index_start: usize,
@@ -16,9 +16,6 @@ pub struct Sector {
 
     pub top_colour: Color,
     pub bottom_colour: Color,
-
-    pub surf: [i32; VSCREEN_WIDTH as usize],
-    pub surface: i32,
 }
 
 impl Sector {
@@ -39,8 +36,6 @@ impl Sector {
             distance: 0,
             top_colour,
             bottom_colour,
-            surf: [0; VSCREEN_WIDTH as usize],
-            surface: 0,
         }
     }
 
