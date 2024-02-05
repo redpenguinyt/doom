@@ -27,7 +27,9 @@ impl GameTick {
     }
 
     pub fn sleep_frame(&mut self) {
-        thread::sleep(Duration::from_secs(1) / FPS - self.frame_started.elapsed());
+        if self.frame_started.elapsed() < Duration::from_secs(1) {
+            thread::sleep(Duration::from_secs(1) / FPS - self.frame_started.elapsed());
+        }
         self.frame_started = Instant::now()
     }
 }
