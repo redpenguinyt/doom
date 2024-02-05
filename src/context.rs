@@ -1,12 +1,12 @@
 mod player;
 mod rotation;
-mod wall;
 mod sector;
+mod wall;
 
 use player::Player;
 pub use rotation::Rotation;
-pub use wall::Wall;
 pub use sector::Sector;
+pub use wall::Wall;
 
 use crate::types::Pos3D;
 
