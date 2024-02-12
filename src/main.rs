@@ -6,7 +6,7 @@ mod renderer;
 mod tick;
 mod types;
 
-use context::GameContext;
+use context::Context;
 use renderer::*;
 use tick::GameTick;
 
@@ -28,7 +28,7 @@ pub fn main() -> Result<(), String> {
 
     let mut event_pump = sdl_context.event_pump()?;
 
-    let mut context = GameContext::new();
+    let mut context = Context::new();
     let mut game_tick = GameTick::new();
 
     'running: loop {

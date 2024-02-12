@@ -3,7 +3,7 @@ use core::f64;
 use sdl2::{pixels::Color, rect::Rect, render::WindowCanvas, video::Window};
 
 use crate::{
-    context::{GameContext, Rotation},
+    context::{Context, Rotation},
     types::{Pos2D, Pos3D},
 };
 
@@ -57,7 +57,7 @@ impl Renderer {
         Ok(())
     }
 
-    pub fn draw(&mut self, context: &mut GameContext) -> Result<(), String> {
+    pub fn draw(&mut self, context: &mut Context) -> Result<(), String> {
         // TODO: avoid mutating context
         self.canvas
             .window_mut()
@@ -72,7 +72,7 @@ impl Renderer {
         Ok(())
     }
 
-    pub fn draw_3d(&mut self, context: &mut GameContext) -> Result<(), String> {
+    pub fn draw_3d(&mut self, context: &mut Context) -> Result<(), String> {
         let mut w = [Pos3D::ZERO; 4];
         let player = &context.player;
         let rotation = Rotation::from_degrees(player.turn);

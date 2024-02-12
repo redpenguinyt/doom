@@ -11,13 +11,13 @@ pub use wall::Wall;
 
 use crate::types::Pos3D;
 
-pub struct GameContext {
+pub struct Context {
     pub player: Player,
     pub walls: Vec<Wall>,
     pub sectors: Vec<Sector>,
 }
 
-impl GameContext {
+impl Context {
     pub fn new() -> Self {
         Self {
             player: Player::new(Pos3D::new(70, -110, 20)),
