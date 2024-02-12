@@ -7,7 +7,7 @@ mod tick;
 mod types;
 
 use context::Context;
-use renderer::{PIXEL_SCALE, Renderer, VSCREEN_HEIGHT, VSCREEN_WIDTH, colour_from_id};
+use renderer::{colour_from_id, Renderer, PIXEL_SCALE, VSCREEN_HEIGHT, VSCREEN_WIDTH};
 use tick::GameTick;
 
 fn main() -> Result<(), String> {
