@@ -17,8 +17,8 @@ impl Pos2D {
         Self { x, y }
     }
 
-    pub fn magnitude(&self) -> f64 {
-        ((self.x.pow(2) + self.y.pow(2)) as f64).sqrt().round()
+    pub fn magnitude(self) -> f64 {
+        f64::from(self.x.pow(2) + self.y.pow(2)).sqrt().round()
     }
 }
 
@@ -36,7 +36,7 @@ impl From<Pos2D> for Point {
 
 impl From<Pos2D> for (f64, f64) {
     fn from(val: Pos2D) -> Self {
-        (val.x as f64, val.y as f64)
+        (f64::from(val.x), f64::from(val.y))
     }
 }
 
@@ -46,24 +46,24 @@ impl From<Pos2D> for (i32, i32) {
     }
 }
 
-impl Add<Pos2D> for Pos2D {
-    type Output = Pos2D;
+impl Add<Self> for Pos2D {
+    type Output = Self;
 
-    fn add(self, rhs: Pos2D) -> Self::Output {
-        Pos2D::new(self.x + rhs.x, self.y + rhs.y)
+    fn add(self, rhs: Self) -> Self::Output {
+        Self::new(self.x + rhs.x, self.y + rhs.y)
     }
 }
 
-impl Sub<Pos2D> for Pos2D {
-    type Output = Pos2D;
+impl Sub<Self> for Pos2D {
+    type Output = Self;
 
-    fn sub(self, rhs: Pos2D) -> Self::Output {
-        Pos2D::new(self.x - rhs.x, self.y - rhs.y)
+    fn sub(self, rhs: Self) -> Self::Output {
+        Self::new(self.x - rhs.x, self.y - rhs.y)
     }
 }
 
 impl Div<i32> for Pos2D {
-    type Output = Pos2D;
+    type Output = Self;
 
     fn div(self, rhs: i32) -> Self::Output {
         Self::new(self.x / rhs, self.y / rhs)

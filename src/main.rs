@@ -7,10 +7,10 @@ mod tick;
 mod types;
 
 use context::Context;
-use renderer::*;
+use renderer::{PIXEL_SCALE, Renderer, VSCREEN_HEIGHT, VSCREEN_WIDTH, colour_from_id};
 use tick::GameTick;
 
-pub fn main() -> Result<(), String> {
+fn main() -> Result<(), String> {
     let sdl_context = sdl2::init()?;
     let video_subsystem = sdl_context.video()?;
 

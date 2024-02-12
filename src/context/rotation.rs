@@ -5,7 +5,7 @@ pub struct Rotation {
 
 impl Rotation {
     pub fn from_degrees(angle: i32) -> Self {
-        let as_rad = (angle as f64).to_radians();
+        let as_rad = f64::from(angle).to_radians();
 
         Self {
             cos: as_rad.cos(),

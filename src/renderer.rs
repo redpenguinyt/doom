@@ -23,10 +23,10 @@ pub struct Renderer {
 }
 
 impl Renderer {
-    pub fn new(window: Window) -> Result<Renderer, String> {
+    pub fn new(window: Window) -> Result<Self, String> {
         let canvas = window.into_canvas().build().map_err(|e| e.to_string())?;
 
-        Ok(Renderer { canvas })
+        Ok(Self { canvas })
     }
 
     fn plot(&mut self, point: Pos2D) -> Result<(), String> {
@@ -100,12 +100,12 @@ impl Renderer {
                     let (x1, y1): (f64, f64) = wall_pos1.into();
 
                     // World X position
-                    w[0].x = (x0 * rotation.cos - y0 * rotation.sin) as i32;
-                    w[1].x = (x1 * rotation.cos - y1 * rotation.sin) as i32;
+                    w[0].x = x0.mul_add(rotation.cos, -(y0 * rotation.sin)) as i32;
+                    w[1].x = x1.mul_add(rotation.cos, -(y1 * rotation.sin)) as i32;
 
                     // World Y position (depth)
-                    w[0].y = (y0 * rotation.cos + x0 * rotation.sin) as i32;
-                    w[1].y = (y1 * rotation.cos + x1 * rotation.sin) as i32;
+                    w[0].y = y0.mul_add(rotation.cos, x0 * rotation.sin) as i32;
+                    w[1].y = y1.mul_add(rotation.cos, x1 * rotation.sin) as i32;
 
                     // Add this wall's distance to the total distance (and average it out later)
                     sector.distance += (Pos2D::from(w[0] + w[1]) / 2).magnitude() as i32;
@@ -172,21 +172,21 @@ impl Renderer {
         color: Color,
         sector: &mut RenderedSector,
     ) -> Result<(), String> {
-        let dyb = (pos1.y - pos0.y) as f64;
-        let dyt = (top_depth1 - top_depth0) as f64;
-        let mut dx = (pos1.x - pos0.x) as f64;
+        let dyb = f64::from(pos1.y - pos0.y);
+        let dyt = f64::from(top_depth1 - top_depth0);
+        let mut dx = f64::from(pos1.x - pos0.x);
         if dx == 0.0 {
             dx = 1.0;
         };
-        let xs = pos0.x as f64;
+        let xs = f64::from(pos0.x);
 
         // Clip X
         let x0 = pos0.x.clamp(0, VSCREEN_WIDTH as i32);
         let x1 = pos1.x.clamp(0, VSCREEN_WIDTH as i32);
 
         for x in x0..x1 {
-            let y0 = (dyb * (x as f64 - xs + 0.5) / dx + pos0.y as f64).round() as i32;
-            let y1 = (dyt * (x as f64 - xs + 0.5) / dx + top_depth0 as f64).round() as i32;
+            let y0 = (dyb * (f64::from(x) - xs + 0.5) / dx + f64::from(pos0.y)).round() as i32;
+            let y1 = (dyt * (f64::from(x) - xs + 0.5) / dx + f64::from(top_depth0)).round() as i32;
 
             let y0 = y0.clamp(0, VSCREEN_HEIGHT as i32);
             let y1 = y1.clamp(0, VSCREEN_HEIGHT as i32);

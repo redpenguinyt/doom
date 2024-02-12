@@ -8,15 +8,15 @@ pub struct Pos3D {
 }
 
 impl Pos3D {
-    pub const ZERO: Self = Pos3D::new(0, 0, 0);
+    pub const ZERO: Self = Self::new(0, 0, 0);
 
     pub const fn new(x: i32, y: i32, z: i32) -> Self {
         Self { x, y, z }
     }
 
-    pub fn clip_behind_player(&self, pos1: Pos3D) -> Pos3D {
-        let da = self.y as f64;
-        let db = pos1.y as f64;
+    pub fn clip_behind_player(&self, pos1: Self) -> Self {
+        let da = f64::from(self.y);
+        let db = f64::from(pos1.y);
 
         let mut d = da - db;
         if d == 0.0 {
@@ -24,25 +24,25 @@ impl Pos3D {
         }
         let s = da / d;
 
-        let mut p = Pos3D::new(
-            (self.x as f64 + s * (pos1.x - self.x) as f64) as i32,
-            (self.y as f64 + s * (pos1.y - self.y) as f64) as i32,
-            (self.z as f64 + s * (pos1.z - self.z) as f64) as i32,
+        let mut p = Self::new(
+            s.mul_add(f64::from(pos1.x - self.x), f64::from(self.x)) as i32,
+            s.mul_add(f64::from(pos1.y - self.y), f64::from(self.y)) as i32,
+            s.mul_add(f64::from(pos1.z - self.z), f64::from(self.z)) as i32,
         );
 
         // Prevent clipping
         if p.y == 0 {
-            p.y = 1
+            p.y = 1;
         };
 
         p
     }
 }
 
-impl Add<Pos3D> for Pos3D {
-    type Output = Pos3D;
+impl Add<Self> for Pos3D {
+    type Output = Self;
 
-    fn add(self, rhs: Pos3D) -> Self::Output {
+    fn add(self, rhs: Self) -> Self::Output {
         Self {
             x: self.x + rhs.x,
             y: self.y + rhs.y,

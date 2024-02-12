@@ -31,6 +31,6 @@ impl GameTick {
         if elapsed < Duration::from_secs(1) / FPS {
             thread::sleep(Duration::from_secs(1) / FPS - elapsed);
         }
-        self.frame_started = Instant::now()
+        self.frame_started = Instant::now();
     }
 }

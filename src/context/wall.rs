@@ -26,13 +26,13 @@ impl Wall {
 
         for i in 0..nums.len() / 5 {
             let i = i * 5;
-            walls.push(Wall::from_raw(
+            walls.push(Self::from_raw(
                 nums[i],
                 nums[i + 1],
                 nums[i + 2],
                 nums[i + 3],
                 nums[i + 4],
-            ))
+            ));
         }
 
         walls

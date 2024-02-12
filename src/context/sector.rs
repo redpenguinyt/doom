@@ -62,14 +62,14 @@ impl Sector {
 
         for i in 0..nums.len() / 6 {
             let i = i * 6;
-            walls.push(Sector::from_raw(
+            walls.push(Self::from_raw(
                 nums[i] as usize,
                 nums[i + 1] as usize,
                 nums[i + 2],
                 nums[i + 3],
                 nums[i + 4],
                 nums[i + 5],
-            ))
+            ));
         }
 
         walls
