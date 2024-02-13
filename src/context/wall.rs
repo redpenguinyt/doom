@@ -13,7 +13,7 @@ impl Wall {
         Self { pos0, pos1, colour }
     }
 
-    pub fn from_raw(x0: i32, y0: i32, x1: i32, y1: i32, colour_id: i32) -> Self {
+    pub const fn from_raw(x0: i32, y0: i32, x1: i32, y1: i32, colour_id: i32) -> Self {
         Self::new(
             Pos2D::new(x0, y0),
             Pos2D::new(x1, y1),
@@ -21,7 +21,7 @@ impl Wall {
         )
     }
 
-    pub fn many_from_raw(nums: Vec<i32>) -> Vec<Self> {
+    pub fn many_from_raw(nums: &[i32]) -> Vec<Self> {
         let mut walls = vec![];
 
         for i in 0..nums.len() / 5 {

@@ -19,7 +19,7 @@ pub struct Sector {
 }
 
 impl Sector {
-    pub fn new(
+    pub const fn new(
         wall_index_start: usize,
         wall_index_end: usize,
         z0: i32,
@@ -39,7 +39,7 @@ impl Sector {
         }
     }
 
-    pub fn from_raw(
+    pub const fn from_raw(
         wall_index_start: usize,
         wall_index_end: usize,
         z0: i32,
@@ -57,7 +57,7 @@ impl Sector {
         )
     }
 
-    pub fn many_from_raw(nums: Vec<i32>) -> Vec<Self> {
+    pub fn many_from_raw(nums: &[i32]) -> Vec<Self> {
         let mut walls = vec![];
 
         for i in 0..nums.len() / 6 {

@@ -8,7 +8,7 @@ mod types;
 
 use context::Context;
 use renderer::{colour_from_id, Renderer, PIXEL_SCALE, VSCREEN_HEIGHT, VSCREEN_WIDTH};
-use tick::GameTick;
+use tick::GameTime;
 
 fn main() -> Result<(), String> {
     let sdl_context = sdl2::init()?;
@@ -29,7 +29,7 @@ fn main() -> Result<(), String> {
     let mut event_pump = sdl_context.event_pump()?;
 
     let mut context = Context::new();
-    let mut game_tick = GameTick::new();
+    let mut game_tick = GameTime::new();
 
     'running: loop {
         for event in event_pump.poll_iter() {
@@ -44,7 +44,7 @@ fn main() -> Result<(), String> {
             }
         }
 
-        context.move_player(event_pump.keyboard_state());
+        context.move_player(&event_pump.keyboard_state());
 
         game_tick.next_frame();
         if game_tick.tick == 0 {

@@ -10,7 +10,7 @@ use crate::{
 mod colour;
 mod rendered_sector;
 
-pub use colour::colour_from_id;
+pub use colour::from_id as colour_from_id;
 
 use self::rendered_sector::RenderedSector;
 
@@ -50,11 +50,9 @@ impl Renderer {
         Ok(())
     }
 
-    fn draw_background(&mut self) -> Result<(), String> {
+    fn draw_background(&mut self) {
         self.canvas.set_draw_color(Color::RGB(0, 60, 130));
         self.canvas.clear();
-
-        Ok(())
     }
 
     pub fn draw(&mut self, context: &mut Context) -> Result<(), String> {
@@ -173,8 +171,8 @@ impl Renderer {
         color: Color,
         sector: &mut RenderedSector,
     ) -> Result<(), String> {
-        let dyb = f64::from(pos1.y - pos0.y);
-        let dyt = f64::from(top_depth1 - top_depth0);
+        let delta_height = f64::from(pos1.y - pos0.y);
+        let delta_depth = f64::from(top_depth1 - top_depth0);
         let mut dx = f64::from(pos1.x - pos0.x);
         if dx == 0.0 {
             dx = 1.0;
@@ -186,8 +184,8 @@ impl Renderer {
         let x1 = pos1.x.clamp(0, VSCREEN_WIDTH as i32);
 
         for x in x0..x1 {
-            let y0 = (dyb * (f64::from(x) - xs + 0.5) / dx + f64::from(pos0.y)).round() as i32;
-            let y1 = (dyt * (f64::from(x) - xs + 0.5) / dx + f64::from(top_depth0)).round() as i32;
+            let y0 = (delta_height * (f64::from(x) - xs + 0.5) / dx + f64::from(pos0.y)).round() as i32;
+            let y1 = (delta_depth * (f64::from(x) - xs + 0.5) / dx + f64::from(top_depth0)).round() as i32;
 
             let y0 = y0.clamp(0, VSCREEN_HEIGHT as i32);
             let y1 = y1.clamp(0, VSCREEN_HEIGHT as i32);

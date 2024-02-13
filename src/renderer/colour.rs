@@ -1,6 +1,6 @@
 use sdl2::pixels::Color;
 
-pub fn colour_from_id(id: i32) -> Color {
+pub const fn from_id(id: i32) -> Color {
     match id {
         0 => Color::RGB(255, 255, 0), // Yellow
         1 => Color::RGB(160, 160, 0), // Darker Yellow

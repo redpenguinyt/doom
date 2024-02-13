@@ -21,7 +21,7 @@ impl Context {
     pub fn new() -> Self {
         Self {
             player: Player::new(Pos3D::new(70, -110, 20)),
-            walls: Wall::many_from_raw(vec![
+            walls: Wall::many_from_raw(&vec![
                 160,228, 168,228, 4,
                 168,228, 176,236, 5,
                 176,236, 176,244, 4,
@@ -75,7 +75,7 @@ impl Context {
                 112,152, 104,152, 4,
                 104,152, 104,144, 5,
             ]),
-            sectors: Sector::many_from_raw(vec![
+            sectors: Sector::many_from_raw(&vec![
                 0,8,   40,20,  9,9,
                 8,16,  0,40,   6,6,
                 16,24, 80,110, 0,0,
@@ -90,7 +90,7 @@ impl Context {
         }
     }
 
-    pub fn move_player(&mut self, keyboard_state: KeyboardState) {
+    pub fn move_player(&mut self, keyboard_state: &KeyboardState) {
         let m_pressed = keyboard_state.is_scancode_pressed(Scancode::M);
         for (scancode, pressed) in keyboard_state.scancodes() {
             if pressed {

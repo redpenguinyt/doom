@@ -9,7 +9,7 @@ pub struct RenderedSector {
 }
 
 impl RenderedSector {
-    pub fn new(sector: &Sector, player_z: i32) -> Self {
+    pub const fn new(sector: &Sector, player_z: i32) -> Self {
         let surface = if player_z < sector.z0 {
             1 // Case 1: player is below sector (bottom is visible)
         } else if player_z > sector.z1 {

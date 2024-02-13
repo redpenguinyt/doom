@@ -10,7 +10,7 @@ pub struct Player {
 }
 
 impl Player {
-    pub fn new(pos: Pos3D) -> Self {
+    pub const fn new(pos: Pos3D) -> Self {
         Self {
             pos,
             turn: 0,

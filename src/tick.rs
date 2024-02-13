@@ -6,13 +6,13 @@ use std::{
 const FPS: u32 = 20;
 const TICK_RATE: u32 = 1;
 
-pub struct GameTick {
+pub struct GameTime {
     frame_started: Instant,
     pub tick: u32,
     pub tick_rate: u32,
 }
 
-impl GameTick {
+impl GameTime {
     pub fn new() -> Self {
         Self {
             frame_started: Instant::now(),
